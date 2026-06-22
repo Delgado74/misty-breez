@@ -74,14 +74,6 @@ class PaymentDetailsSheet extends StatelessWidget {
       orElse: () => '',
     );
 
-    final String bip353Address =
-        paymentData.details.maybeMap(
-          lightning: (PaymentDetails_Lightning details) => details.bip353Address,
-          liquid: (PaymentDetails_Liquid details) => details.bip353Address,
-          orElse: () => null,
-        ) ??
-        '';
-
     final String payerNote =
         paymentData.details.maybeMap(
           lightning: (PaymentDetails_Lightning details) => details.payerNote,
@@ -184,9 +176,6 @@ class PaymentDetailsSheet extends StatelessWidget {
                                 expiryDate: expiryDate,
                                 labelAutoSizeGroup: _labelGroup,
                               ),
-                            ],
-                            if (bip353Address.isNotEmpty) ...<Widget>[
-                              PaymentDetailsSheetBip353Address(bip353Address: bip353Address),
                             ],
                             if (lnAddress.isNotEmpty) ...<Widget>[
                               PaymentDetailsSheetLnUrlLnAddress(lnAddress: lnAddress),

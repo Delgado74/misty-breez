@@ -21,9 +21,8 @@ export 'widgets/widgets.dart';
 
 class LnUrlPaymentArguments {
   final LnUrlPayRequestData requestData;
-  final String? bip353Address;
 
-  LnUrlPaymentArguments({required this.requestData, required this.bip353Address});
+  LnUrlPaymentArguments({required this.requestData});
 }
 
 class LnUrlPaymentPage extends StatefulWidget {
@@ -177,7 +176,7 @@ class LnUrlPaymentPageState extends State<LnUrlPaymentPage> {
       final String? comment = _descriptionController.text.isEmpty ? null : _descriptionController.text;
       final PrepareLnUrlPayRequest req = PrepareLnUrlPayRequest(
         data: widget.lnUrlPaymentArguments.requestData,
-        bip353Address: widget.lnUrlPaymentArguments.bip353Address,
+
         amount: payAmount,
         comment: comment,
         validateSuccessActionUrl: false,

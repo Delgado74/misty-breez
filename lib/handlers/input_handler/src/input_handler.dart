@@ -82,13 +82,12 @@ class InputHandler extends Handler {
     if (inputState is LnInvoiceInputState) {
       return handleLnInvoice(context, inputState.lnInvoice);
     } else if (inputState is LnOfferInputState) {
-      return handleLnOffer(context, inputState.lnOffer, bip353Address: inputState.bip353Address);
+      return handleLnOffer(context, inputState.lnOffer);
     } else if (inputState is LnUrlPayInputState) {
       return handlePayRequest(
         context,
         firstPaymentItemKey,
         inputState.data,
-        bip353Address: inputState.bip353Address,
       );
     } else if (inputState is LnUrlWithdrawInputState) {
       return handleWithdrawRequest(context, inputState.data);
@@ -140,12 +139,11 @@ class InputHandler extends Handler {
     });
   }
 
-  Future<dynamic> handleLnOffer(BuildContext context, LNOffer lnOffer, {String? bip353Address}) async {
+  Future<dynamic> handleLnOffer(BuildContext context, LNOffer lnOffer) async {
     _logger.info('handle LNOffer ${lnOffer.toFormattedString()}');
     final NavigatorState navigator = Navigator.of(context);
     final LnOfferPaymentArguments arguments = LnOfferPaymentArguments(
       lnOffer: lnOffer,
-      bip353Address: bip353Address,
     );
     final SendPaymentRequest? sendPaymentRequest = await navigator.pushNamed<SendPaymentRequest?>(
       LnOfferPaymentPage.routeName,

@@ -19,63 +19,39 @@ class ReceivePaymentPage extends StatefulWidget {
 class _ReceivePaymentPageState extends State<ReceivePaymentPage> {
   static const List<StatefulWidget> pages = <StatefulWidget>[
     ReceiveLightningPaymentPage(),
-    ReceiveLightningAddressPage(),
     ReceiveAmountlessBitcoinAddressPage(),
     ReceiveBitcoinAddressPaymentPage(),
   ];
 
-  bool _hasNotificationPermission = false;
-  bool _hasLnAddressStateError = false;
   bool _hasAmountlessBtcAddressError = false;
 
   late int _currentPageIndex;
-  bool _showInvoicePage = false;
   bool _showBtcPaymentRequestPage = false;
 
   @override
   void initState() {
     super.initState();
     setState(() {
-      _currentPageIndex = widget.initialPageIndex ?? ReceiveLightningAddressPage.pageIndex;
+      _currentPageIndex = widget.initialPageIndex ?? 0;
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    final PermissionStatus notificationStatus = context.select<PermissionsCubit, PermissionStatus>(
-      (PermissionsCubit cubit) => cubit.state.notificationStatus,
-    );
-    _hasNotificationPermission = notificationStatus == PermissionStatus.granted;
-    _hasLnAddressStateError = context.select<LnAddressCubit, bool>(
-      (LnAddressCubit cubit) => cubit.state.hasError,
-    );
-
     _hasAmountlessBtcAddressError = context.select<AmountlessBtcCubit, bool>(
       (AmountlessBtcCubit cubit) => cubit.state.hasError,
     );
-
-    _updatePageIndex();
 
     return Scaffold(
       appBar: AppBar(
         leading: back_button.BackButton(
           onPressed: () {
-            final bool canReturnToLNAddressPage = (_hasNotificationPermission && !_hasLnAddressStateError);
-            if (_showInvoicePage && canReturnToLNAddressPage) {
-              setState(() {
-                _showInvoicePage = false;
-              });
-              return;
-            }
-
-            final bool canReturnToAmountlessBtcPage = !_hasAmountlessBtcAddressError;
-            if (_showBtcPaymentRequestPage && canReturnToAmountlessBtcPage) {
+            if (_showBtcPaymentRequestPage && !_hasAmountlessBtcAddressError) {
               setState(() {
                 _showBtcPaymentRequestPage = false;
               });
               return;
             }
-
             Navigator.of(context).pushReplacementNamed(Home.routeName);
           },
         ),
@@ -85,23 +61,17 @@ class _ReceivePaymentPageState extends State<ReceivePaymentPage> {
         ),
         centerTitle: true,
         actions: <Widget>[
-          IconButton(
-            alignment: Alignment.center,
-            icon: const Icon(Icons.edit_note_rounded, size: 24.0),
-            // TODO(erdemyerebasmaz): Add message to Breez-Translations
-            tooltip: 'Specify amount for payment request',
-            onPressed: () {
-              if (_currentPageIndex == ReceiveLightningAddressPage.pageIndex) {
-                setState(() {
-                  _showInvoicePage = true;
-                });
-              } else if (_currentPageIndex == ReceiveAmountlessBitcoinAddressPage.pageIndex) {
+          if (_currentPageIndex == ReceiveAmountlessBitcoinAddressPage.pageIndex)
+            IconButton(
+              alignment: Alignment.center,
+              icon: const Icon(Icons.edit_note_rounded, size: 24.0),
+              tooltip: 'Specify amount for payment request',
+              onPressed: () {
                 setState(() {
                   _showBtcPaymentRequestPage = true;
                 });
-              }
-            },
-          ),
+              },
+            ),
         ],
       ),
       body: Padding(
@@ -111,35 +81,13 @@ class _ReceivePaymentPageState extends State<ReceivePaymentPage> {
     );
   }
 
-  void _updatePageIndex() {
-    final int effectivePageIndex = _getEffectivePageIndex();
-
-    if (effectivePageIndex != _currentPageIndex) {
-      setState(() {
-        _currentPageIndex = effectivePageIndex;
-      });
-    }
-  }
-
   int _getEffectivePageIndex() {
-    // Redirect to Invoice page if LN Address page is opened
-    // - without notification permissions
-    // - when LN Address state had errors
-    if (_currentPaymentMethod == PaymentMethod.bolt11Invoice) {
-      final bool shouldRedirect = _showInvoicePage || !_hasNotificationPermission || _hasLnAddressStateError;
-      return shouldRedirect ? ReceiveLightningPaymentPage.pageIndex : ReceiveLightningAddressPage.pageIndex;
-    }
-
-    // Redirect to BTC Invoice page if amountless BTC Address page is opened
-    // - when Amountless BTC Address state had errors
     if (_currentPaymentMethod == PaymentMethod.bitcoinAddress) {
-      final bool shouldRedirect = _showBtcPaymentRequestPage || _hasAmountlessBtcAddressError;
-      return shouldRedirect
+      return _showBtcPaymentRequestPage || _hasAmountlessBtcAddressError
           ? ReceiveBitcoinAddressPaymentPage.pageIndex
           : ReceiveAmountlessBitcoinAddressPage.pageIndex;
     }
-
-    return _currentPageIndex;
+    return 0;
   }
 
   PaymentMethod get _currentPaymentMethod {
@@ -150,30 +98,16 @@ class _ReceivePaymentPageState extends State<ReceivePaymentPage> {
   }
 
   Future<void> _onPaymentMethodChanged(PaymentMethod newMethod) async {
-    if (newMethod == PaymentMethod.liquidAddress || newMethod == _currentPaymentMethod) {
+    if (newMethod == _currentPaymentMethod) {
       return;
     }
     Future<void>.microtask(() async {
       setState(() {
-        _showInvoicePage = false;
         _showBtcPaymentRequestPage = false;
-        _currentPageIndex = _getPageIndexForPaymentMethod(newMethod);
+        _currentPageIndex = newMethod == PaymentMethod.bitcoinAddress
+            ? ReceiveAmountlessBitcoinAddressPage.pageIndex
+            : 0;
       });
     });
-  }
-
-  // Get the appropriate page index for a payment method
-  int _getPageIndexForPaymentMethod(PaymentMethod method) {
-    switch (method) {
-      case PaymentMethod.bitcoinAddress:
-        return ReceiveAmountlessBitcoinAddressPage.pageIndex;
-      case PaymentMethod.bolt12Offer:
-        // TODO(dangeross): Add a BOLT12 offer to the Lightning address page
-        return ReceiveLightningAddressPage.pageIndex;
-      case PaymentMethod.bolt11Invoice:
-        return ReceiveLightningAddressPage.pageIndex;
-      case PaymentMethod.liquidAddress:
-        return ReceiveAmountlessBitcoinAddressPage.pageIndex; // Fallback
-    }
   }
 }

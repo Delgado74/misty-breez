@@ -5,7 +5,6 @@ import 'package:breez_preferences/breez_preferences.dart';
 import 'package:breez_sdk_liquid/breez_sdk_liquid.dart';
 import 'package:credentials_manager/credentials_manager.dart';
 import 'package:device_client/device_client.dart';
-import 'package:firebase_notifications_client/firebase_notifications_client.dart';
 import 'package:keychain/keychain.dart';
 import 'package:lightning_links/lightning_links.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -13,8 +12,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 class ServiceInjector {
   static final ServiceInjector _singleton = ServiceInjector._internal();
   static ServiceInjector? _injector;
-
-  FirebaseNotificationsClient? _notifications;
 
   BreezSDKLiquid? _breezSdkLiquid;
   LightningLinksService? _lightningLinksService;
@@ -31,8 +28,6 @@ class ServiceInjector {
   ServiceInjector._internal();
 
   static void configure(ServiceInjector injector) => _injector = injector;
-
-  NotificationsClient get notifications => _notifications ??= FirebaseNotificationsClient();
 
   DeviceClient get deviceClient => _deviceClient ??= DeviceClient();
 

@@ -56,11 +56,6 @@ Route<dynamic>? onGenerateRoute({
                       ),
                       settings: settings,
                     );
-                  case ReceiveLightningAddressPage.routeName:
-                    return FadeInRoute<void>(
-                      builder: (BuildContext _) => const ReceiveLightningAddressPage(),
-                      settings: settings,
-                    );
                   case ReceiveLightningPaymentPage.routeName:
                     return FadeInRoute<void>(
                       builder: (BuildContext context) => BlocProvider<PaymentLimitsCubit>(

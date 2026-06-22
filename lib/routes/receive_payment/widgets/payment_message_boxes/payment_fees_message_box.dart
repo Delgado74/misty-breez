@@ -20,12 +20,8 @@ class PaymentFeesMessageBox extends StatelessWidget {
   String _formatFeesMessage(BuildContext context, int feesSat) {
     final BreezTranslations texts = context.texts();
 
-    final PermissionsCubit permissionsCubit = context.read<PermissionsCubit>();
-    final bool hasNotificationPermission = permissionsCubit.state.hasNotificationPermission;
-    final String warningMessage = hasNotificationPermission ? '' : ' ${texts.payment_fees_warning_message}';
-
     if (feesSat == 0) {
-      return warningMessage.trim();
+      return '';
     }
 
     final CurrencyCubit currencyCubit = context.read<CurrencyCubit>();
@@ -40,6 +36,6 @@ class PaymentFeesMessageBox extends StatelessWidget {
     final String paymentType = isBitcoinPayment ? 'payment request' : 'invoice';
 
     // TODO(erdemyerebasmaz): Add message to Breez-Translations
-    return 'A fee of $feeText is applied to this $paymentType.$warningMessage';
+    return 'A fee of $feeText is applied to this $paymentType.';
   }
 }

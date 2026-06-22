@@ -107,19 +107,15 @@ extension RefundRequestFormatted on RefundRequest {
 extension SendDestinationFormatter on SendDestination {
   String toFormattedString() {
     return switch (this) {
-      SendDestination_LiquidAddress(
-        addressData: final LiquidAddressData addressData,
-        bip353Address: final String? bip353Address,
-      ) =>
-        'Liquid Address: ${addressData.address}${bip353Address != null ? ' (resolved from $bip353Address)' : ''}',
-      SendDestination_Bolt11(invoice: final LNInvoice invoice, bip353Address: final String? bip353Address) =>
-        'BOLT11 Invoice: ${invoice.toFormattedString()}${bip353Address != null ? ' (resolved from $bip353Address)' : ''}',
+      SendDestination_LiquidAddress(addressData: final LiquidAddressData addressData) =>
+        'Liquid Address: ${addressData.address}',
+      SendDestination_Bolt11(invoice: final LNInvoice invoice) =>
+        'BOLT11 Invoice: ${invoice.toFormattedString()}',
       SendDestination_Bolt12(
         offer: final LNOffer offer,
         receiverAmountSat: final BigInt receiverAmountSat,
-        bip353Address: final String? bip353Address,
       ) =>
-        'BOLT12 Offer: ${offer.toFormattedString()}, Amount: $receiverAmountSat sats${bip353Address != null ? ' (resolved from $bip353Address)' : ''}}',
+        'BOLT12 Offer: ${offer.toFormattedString()}, Amount: $receiverAmountSat sats',
     };
   }
 }

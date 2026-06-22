@@ -74,27 +74,11 @@ class ReceiveLightningPaymentPageState extends State<ReceiveLightningPaymentPage
             return const CenteredLoader();
           }
 
-          final bool hasNotificationPermission = context.select<PermissionsCubit, bool>(
-            (PermissionsCubit cubit) => cubit.state.hasNotificationPermission,
-          );
-
-          final bool hasLnAddressStateError = context.select<LnAddressCubit, bool>(
-            (LnAddressCubit cubit) => cubit.state.hasError,
-          );
-
           return prepareResponseFuture == null
               ? Padding(
                   padding: const EdgeInsets.only(top: 32, bottom: 40.0),
                   child: SingleChildScrollView(
-                    child: Column(
-                      children: <Widget>[
-                        _buildForm(lightningPaymentLimits),
-                        _buildLnAddressWarnings(
-                          hasNotificationPermission: hasNotificationPermission,
-                          hasLnAddressStateError: hasLnAddressStateError,
-                        ),
-                      ],
-                    ),
+                    child: _buildForm(lightningPaymentLimits),
                   ),
                 )
               : _buildInvoiceQRCode();
@@ -336,18 +320,4 @@ class ReceiveLightningPaymentPageState extends State<ReceiveLightningPaymentPage
     );
   }
 
-  Widget _buildLnAddressWarnings({
-    required bool hasNotificationPermission,
-    required bool hasLnAddressStateError,
-  }) {
-    if (!hasNotificationPermission) {
-      return const NotificationPermissionWarningBox();
-    }
-
-    if (hasLnAddressStateError) {
-      return const LnAddressErrorWarningBox();
-    }
-
-    return const SizedBox.shrink();
-  }
 }

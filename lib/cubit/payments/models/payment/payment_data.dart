@@ -186,16 +186,6 @@ class _PaymentDataFactory {
   _PaymentDataFactory(this._payment, this._texts);
 
   String _title() {
-    final String? bip353Address = _payment.details.maybeMap(
-      lightning: (PaymentDetails_Lightning details) => details.bip353Address,
-      liquid: (PaymentDetails_Liquid details) => details.bip353Address,
-      orElse: () => null,
-    );
-
-    if (bip353Address?.isNotEmpty == true) {
-      return bip353Address!;
-    }
-
     final LnUrlInfo? lnurlInfo = _payment.details.maybeMap(
       lightning: (PaymentDetails_Lightning details) => details.lnurlInfo,
       liquid: (PaymentDetails_Liquid details) => details.lnurlInfo,

@@ -8,19 +8,16 @@ import 'package:misty_breez/cubit/cubit.dart';
 import 'package:collection/collection.dart';
 
 export 'factories/factories.dart';
-export 'models/models.dart';
 export 'nwc_state.dart';
-export 'services/services.dart';
 
 final Logger _logger = Logger('NwcCubit');
 
 class NwcCubit extends Cubit<NwcState> with HydratedMixin<NwcState> {
   final BreezSDKLiquid breezSdkLiquid;
   final BreezNwcService nwcService;
-  final NwcRegistrationManager nwcRegistrationManager;
   StreamSubscription<NwcEvent>? _nwcEventSubscription;
 
-  NwcCubit({required this.breezSdkLiquid, required this.nwcService, required this.nwcRegistrationManager})
+  NwcCubit({required this.breezSdkLiquid, required this.nwcService})
     : super(NwcState.initial()) {
     hydrate();
     loadConnections();
@@ -122,24 +119,6 @@ class NwcCubit extends Cubit<NwcState> with HydratedMixin<NwcState> {
       final AddConnectionResponse response = await nwcService.addConnection(req: request);
       final String connectionString = response.connection.connectionString;
 
-      final InputType parsedNwcUri = await breezSdkLiquid.instance!.parse(
-        input: response.connection.connectionString,
-      );
-      switch (parsedNwcUri) {
-        case InputType_NostrWalletConnectUri(data: final NostrWalletConnectUri uri):
-          // According to NIP-47:
-          // - walletServicePublicKey = wallet service pubkey (Breez)
-          // - appPublicKey = client app pubkey (derived from secret)
-          await nwcRegistrationManager.setupWebhook(
-            (await breezSdkLiquid.instance!.getInfo()).walletInfo.pubkey,
-            uri.walletServicePublicKey,
-            uri.appPublicKey,
-            uri.relays,
-          );
-        default:
-          throw Exception('Invalid response type returned from the SDK.');
-      }
-
       emit(state.copyWith(isLoading: false));
 
       await loadConnections();
@@ -153,8 +132,6 @@ class NwcCubit extends Cubit<NwcState> with HydratedMixin<NwcState> {
   }
 
   /// Deletes an NWC connection by name.
-  /// The local connection is always removed first. The server webhook removal is
-  /// attempted independently; on failure [NwcState.webhookError] is set
   Future<void> deleteConnection(String name) async {
     emit(state.copyWith(isLoading: true));
 
@@ -172,25 +149,6 @@ class NwcCubit extends Cubit<NwcState> with HydratedMixin<NwcState> {
           .where((NwcConnectionModel c) => c.name != name)
           .toList();
       emit(NwcState(connections: updatedConnections));
-
-      try {
-        final InputType parsedNwcUri = await breezSdkLiquid.instance!.parse(
-          input: connection.connectionString,
-        );
-        switch (parsedNwcUri) {
-          case InputType_NostrWalletConnectUri(data: final NostrWalletConnectUri uri):
-            await nwcRegistrationManager.removeWebhook(
-              (await breezSdkLiquid.instance!.getInfo()).walletInfo.pubkey,
-              uri.walletServicePublicKey,
-              uri.appPublicKey,
-            );
-          default:
-            throw Exception('Invalid response type returned from the SDK.');
-        }
-      } catch (e) {
-        _logger.severe('Failed to remove webhook for connection "$name"', e);
-        emit(state.copyWith(webhookError: 'Failed to remove webhook: ${e.toString()}'));
-      }
     } catch (e) {
       _logger.severe('Failed to delete NWC connection', e);
       emit(state.copyWith(isLoading: false, error: 'Failed to delete connection: ${e.toString()}'));

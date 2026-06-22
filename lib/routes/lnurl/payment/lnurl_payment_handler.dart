@@ -11,13 +11,12 @@ final Logger _logger = Logger('HandleLNURLPayRequest');
 Future<LNURLPageResult?> handlePayRequest(
   BuildContext context,
   GlobalKey firstPaymentItemKey,
-  LnUrlPayRequestData requestData, {
-  String? bip353Address,
-}) async {
+  LnUrlPayRequestData requestData,
+) async {
   final NavigatorState navigator = Navigator.of(context);
   final PrepareLnUrlPayResponse? prepareResponse = await navigator.pushNamed<PrepareLnUrlPayResponse?>(
     LnUrlPaymentPage.routeName,
-    arguments: LnUrlPaymentArguments(requestData: requestData, bip353Address: bip353Address),
+    arguments: LnUrlPaymentArguments(requestData: requestData),
   );
   if (prepareResponse == null || !context.mounted) {
     return Future<LNURLPageResult?>.value();

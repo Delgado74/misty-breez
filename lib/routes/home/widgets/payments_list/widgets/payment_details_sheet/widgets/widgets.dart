@@ -1,5 +1,4 @@
 export 'payment_details_sheet_amount.dart';
-export 'payment_details_sheet_bip_353_address.dart';
 export 'payment_details_sheet_content_title.dart';
 export 'payment_details_sheet_date.dart';
 export 'payment_details_sheet_description.dart';

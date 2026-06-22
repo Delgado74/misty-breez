@@ -18,9 +18,8 @@ import 'package:service_injector/service_injector.dart';
 
 class LnOfferPaymentArguments {
   final LNOffer lnOffer;
-  final String? bip353Address;
 
-  LnOfferPaymentArguments({required this.lnOffer, required this.bip353Address});
+  LnOfferPaymentArguments({required this.lnOffer});
 }
 
 class LnOfferPaymentPage extends StatefulWidget {
@@ -149,8 +148,7 @@ class LnOfferPaymentPageState extends State<LnOfferPaymentPage> {
         errorMessage = '';
       });
 
-      final String destination =
-          widget.lnOfferPaymentArguments.bip353Address ?? widget.lnOfferPaymentArguments.lnOffer.offer;
+      final String destination = widget.lnOfferPaymentArguments.lnOffer.offer;
 
       final PayAmount payAmount = _isDrain
           ? const PayAmount_Drain()

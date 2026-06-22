@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:breez_logger/breez_logger.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -10,12 +9,9 @@ import 'package:flutter_breez_liquid/flutter_breez_liquid.dart' as liquid_sdk;
 import 'package:flutter_svg/svg.dart';
 import 'package:logging/logging.dart';
 import 'package:misty_breez/cubit/cubit.dart';
-// ignore: uri_does_not_exist
-import 'package:misty_breez/firebase/firebase_options.dart';
 import 'package:misty_breez/main/main.dart';
 import 'package:misty_breez/utils/utils.dart';
 import 'package:service_injector/service_injector.dart';
-import 'package:shared_preference_app_group/shared_preference_app_group.dart';
 
 final Logger _logger = Logger('Bootstrap');
 
@@ -32,10 +28,6 @@ Future<void> bootstrap(AppBuilder builder) async {
         DeviceOrientation.portraitUp,
         DeviceOrientation.portraitDown,
       ]);
-      // iOS Extension requirement
-      if (defaultTargetPlatform == TargetPlatform.iOS) {
-        SharedPreferenceAppGroup.setAppGroup('group.F7R2LZH3W5.com.breez.misty');
-      }
 
       // Initialize library
       await _initializeBreezSdkLiquid();
@@ -43,14 +35,6 @@ Future<void> bootstrap(AppBuilder builder) async {
       final BreezLogger breezLogger = injector.breezLogger;
       breezLogger.registerBreezSdkLiquidLogs(injector.breezSdkLiquid);
       BreezDateUtils.setupLocales();
-      if (Firebase.apps.isEmpty) {
-        _logger.info('List of Firebase apps: ${Firebase.apps}');
-        await Firebase.initializeApp(
-          name: 'breez-technology',
-          // ignore: undefined_identifier
-          options: DefaultFirebaseOptions.currentPlatform,
-        );
-      }
 
       await HydratedBlocStorage().initialize();
 

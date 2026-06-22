@@ -19,11 +19,9 @@ class InputState {
 
   const factory InputState.invoice(LNInvoice invoice, InputSource source) = LnInvoiceInputState;
 
-  const factory InputState.bolt12Offer(LNOffer lnOffer, String? bip353Address, InputSource source) =
-      LnOfferInputState;
+  const factory InputState.bolt12Offer(LNOffer lnOffer, InputSource source) = LnOfferInputState;
 
-  const factory InputState.lnUrlPay(LnUrlPayRequestData data, String? bip353Address, InputSource source) =
-      LnUrlPayInputState;
+  const factory InputState.lnUrlPay(LnUrlPayRequestData data, InputSource source) = LnUrlPayInputState;
 
   const factory InputState.lnUrlWithdraw(LnUrlWithdrawRequestData data, InputSource source) =
       LnUrlWithdrawInputState;
@@ -96,15 +94,14 @@ class LnInvoiceInputState extends InputState {
 }
 
 class LnOfferInputState extends InputState {
-  const LnOfferInputState(this.lnOffer, this.bip353Address, this.source) : super._();
+  const LnOfferInputState(this.lnOffer, this.source) : super._();
 
   final LNOffer lnOffer;
-  final String? bip353Address;
   final InputSource source;
 
   @override
   String toString() {
-    return 'LnOfferInputState{lnOffer: ${lnOffer.toFormattedString()}, bip353Address: $bip353Address, source: $source}';
+    return 'LnOfferInputState{lnOffer: ${lnOffer.toFormattedString()}, source: $source}';
   }
 
   @override
@@ -113,23 +110,21 @@ class LnOfferInputState extends InputState {
       other is LnOfferInputState &&
           runtimeType == other.runtimeType &&
           lnOffer == other.lnOffer &&
-          bip353Address == other.bip353Address &&
           source == other.source;
 
   @override
-  int get hashCode => Object.hash(lnOffer, bip353Address, source);
+  int get hashCode => Object.hash(lnOffer, source);
 }
 
 class LnUrlPayInputState extends InputState {
-  const LnUrlPayInputState(this.data, this.bip353Address, this.source) : super._();
+  const LnUrlPayInputState(this.data, this.source) : super._();
 
   final LnUrlPayRequestData data;
-  final String? bip353Address;
   final InputSource source;
 
   @override
   String toString() {
-    return 'LnUrlPayInputState{data: ${data.toFormattedString()}, bip353Address: $bip353Address, source: $source}';
+    return 'LnUrlPayInputState{data: ${data.toFormattedString()}, source: $source}';
   }
 
   @override
@@ -138,11 +133,10 @@ class LnUrlPayInputState extends InputState {
       other is LnUrlPayInputState &&
           runtimeType == other.runtimeType &&
           data == other.data &&
-          bip353Address == other.bip353Address &&
           source == other.source;
 
   @override
-  int get hashCode => Object.hash(data, bip353Address, source);
+  int get hashCode => Object.hash(data, source);
 }
 
 class LnUrlWithdrawInputState extends InputState {
