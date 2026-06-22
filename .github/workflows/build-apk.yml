@@ -57,6 +57,16 @@ jobs:
       - name: Setup just
         uses: extractions/setup-just@v4
 
+      - name: Configure Cargo (avoid HTTP/2 crates.io errors)
+        run: |
+          mkdir -p ~/.cargo
+          cat > ~/.cargo/config.toml << 'EOF'
+          [http]
+          multiplexing = false
+          [net]
+          retry = 3
+          EOF
+
       - name: Install Breez Liquid SDK dependencies
         working-directory: breez-sdk-liquid/packages/flutter_breez_liquid/
         run: just setup
