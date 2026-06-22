@@ -83,6 +83,11 @@ jobs:
           echo "VERSION_BASE=$VERSION_BASE" >> $GITHUB_ENV
           echo "BUILD_NUMBER=$BUILD_NUMBER" >> $GITHUB_ENV
 
+      - name: Setup compile-time variables
+        working-directory: misty_breez
+        run: |
+          echo '${{ vars.CONFIG_FILE }}' > config.json
+
       - name: Build APK arm64-v8a
         working-directory: misty_breez
         run: |
@@ -92,16 +97,17 @@ jobs:
             --target="lib/main/main.dart" \
             --release \
             --target-platform android-arm64 \
-            --no-pub
+            --no-pub \
+            --dart-define-from-file="config.json"
 
       - name: Rename APK
         working-directory: misty_breez
         run: |
           mv build/app/outputs/flutter-apk/app-arm64-v8a-release.apk \
-             build/app/outputs/flutter-apk/app-arm64-v8a-release.apk
+             build/app/outputs/flutter-apk/wallet-${{ env.VERSION_BASE }}-${{ env.BUILD_NUMBER }}-arm64-v8a.apk
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
-          name: app-arm64-v8a-${{ env.BUILD_NUMBER }}
-          path: misty_breez/build/app/outputs/flutter-apk/app-arm64-v8a-release.apk
+          name: wallet-arm64-v8a-${{ env.BUILD_NUMBER }}
+          path: misty_breez/build/app/outputs/flutter-apk/wallet-${{ env.VERSION_BASE }}-${{ env.BUILD_NUMBER }}-arm64-v8a.apk
