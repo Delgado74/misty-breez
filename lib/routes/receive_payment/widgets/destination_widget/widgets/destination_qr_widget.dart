@@ -9,7 +9,6 @@ import 'package:misty_breez/widgets/widgets.dart';
 class DestinationQRWidget extends StatelessWidget {
   final AsyncSnapshot<ReceivePaymentResponse>? snapshot;
   final String? destination;
-  final String? lnAddress;
   final String? paymentLabel;
   final void Function()? onLongPress;
   final Widget? infoWidget;
@@ -17,7 +16,6 @@ class DestinationQRWidget extends StatelessWidget {
   const DestinationQRWidget({
     required this.snapshot,
     required this.destination,
-    this.lnAddress,
     this.paymentLabel,
     this.onLongPress,
     this.infoWidget,
@@ -51,9 +49,6 @@ class DestinationQRWidget extends StatelessWidget {
           paymentLabel: paymentLabel,
           lnAddress: lnAddress,
         ),
-        if (lnAddress != null && lnAddress!.isNotEmpty) ...<Widget>[
-          DestinationInformation(lnAddress: lnAddress!),
-        ],
         if (infoWidget != null) ...<Widget>[
           SizedBox(width: MediaQuery.of(context).size.width, child: infoWidget),
         ],

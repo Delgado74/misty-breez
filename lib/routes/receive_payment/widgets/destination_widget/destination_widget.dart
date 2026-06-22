@@ -136,7 +136,6 @@ class _DestinationWidgetState extends State<DestinationWidget> {
           child: DestinationQRWidget(
             snapshot: widget.snapshot,
             destination: widget.destination,
-            lnAddress: widget.lnAddress,
             paymentLabel: widget.paymentLabel,
             onLongPress: widget.onLongPress,
             infoWidget: widget.infoWidget,
