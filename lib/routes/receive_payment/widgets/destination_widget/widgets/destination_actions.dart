@@ -12,13 +12,11 @@ import 'package:share_plus/share_plus.dart';
 class DestinationActions extends StatelessWidget {
   final AsyncSnapshot<ReceivePaymentResponse>? snapshot;
   final String? destination;
-  final String? lnAddress;
   final String? paymentLabel;
 
   const DestinationActions({
     required this.snapshot,
     required this.destination,
-    this.lnAddress,
     this.paymentLabel,
     super.key,
   });
@@ -37,7 +35,6 @@ class DestinationActions extends StatelessWidget {
                 Expanded(
                   child: _CopyButton(
                     destination: destination,
-                    lnAddress: lnAddress,
                     tooltip: paymentLabel,
                     textGroup: textGroup,
                   ),
@@ -56,10 +53,9 @@ class DestinationActions extends StatelessWidget {
 class _CopyButton extends StatelessWidget {
   final String destination;
   final String? tooltip;
-  final String? lnAddress;
   final AutoSizeGroup? textGroup;
 
-  const _CopyButton({required this.destination, this.tooltip, this.lnAddress, this.textGroup});
+  const _CopyButton({required this.destination, this.tooltip, this.textGroup});
 
   @override
   Widget build(BuildContext context) {
@@ -85,13 +81,10 @@ class _CopyButton extends StatelessWidget {
             stepGranularity: 0.1,
           ),
           onPressed: () {
-            ServiceInjector().deviceClient.setClipboardText(
-              (lnAddress != null && lnAddress!.isNotEmpty) ? lnAddress! : destination,
-            );
+            ServiceInjector().deviceClient.setClipboardText(destination);
             showFlushbar(
               context,
-              message:
-                  (lnAddress != null && lnAddress!.isNotEmpty) || (tooltip != null && tooltip!.isNotEmpty)
+              message: tooltip != null && tooltip!.isNotEmpty
                   ? texts.payment_details_dialog_copied(tooltip!)
                   : texts.invoice_btc_address_deposit_address_copied,
               duration: const Duration(seconds: 3),

@@ -47,7 +47,6 @@ class DestinationQRWidget extends StatelessWidget {
           snapshot: snapshot,
           destination: destination,
           paymentLabel: paymentLabel,
-          lnAddress: lnAddress,
         ),
         if (infoWidget != null) ...<Widget>[
           SizedBox(width: MediaQuery.of(context).size.width, child: infoWidget),
