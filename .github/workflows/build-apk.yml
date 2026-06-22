@@ -1,0 +1,113 @@
+name: Build APK (arm64-v8a)
+
+on:
+  workflow_dispatch:
+
+env:
+  SDK_REF: main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Free disk space
+        run: |
+          sudo rm -rf /usr/local/.ghcup
+          sudo rm -rf /opt/hostedtoolcache/CodeQL
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /opt/ghc
+          sudo apt-get clean
+
+      - name: Checkout misty-breez
+        uses: actions/checkout@v4
+        with:
+          path: misty_breez
+
+      - name: Checkout breez-sdk-liquid
+        uses: actions/checkout@v4
+        with:
+          repository: breez/breez-sdk-liquid
+          path: breez-sdk-liquid
+          ref: ${{ env.SDK_REF }}
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: zulu
+          java-version: 17
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: 3.x
+          cache: true
+
+      - name: Install Rust
+        run: |
+          rustup set auto-self-update disable
+          rustup toolchain install stable --profile minimal
+
+      - name: Install Protoc
+        uses: arduino/setup-protoc@v3
+        with:
+          version: "27.2"
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup just
+        uses: extractions/setup-just@v4
+
+      - name: Install Breez Liquid SDK dependencies
+        working-directory: breez-sdk-liquid/packages/flutter_breez_liquid/
+        run: just setup
+
+      - name: Build Breez Liquid SDK Android bindings
+        working-directory: breez-sdk-liquid/packages/flutter_breez_liquid/
+        run: just build-uniffi-android
+
+      - name: Generate Dart/Flutter bindings
+        working-directory: breez-sdk-liquid/packages/flutter_breez_liquid/
+        continue-on-error: true
+        run: just codegen
+
+      - name: Install Flutter dependencies
+        working-directory: misty_breez
+        run: flutter pub get
+
+      - name: Get version from pubspec.yaml
+        working-directory: misty_breez
+        run: |
+          VERSION=$(awk -F ': ' '/^version:/ {print $2}' pubspec.yaml)
+          VERSION_BASE=${VERSION%%+*}
+          BUILD_NUMBER=$(date -u +%s)
+          echo "VERSION_BASE=$VERSION_BASE" >> $GITHUB_ENV
+          echo "BUILD_NUMBER=$BUILD_NUMBER" >> $GITHUB_ENV
+
+      - name: Setup compile-time variables
+        working-directory: misty_breez
+        run: |
+          echo '${{ vars.CONFIG_FILE }}' > config.json
+
+      - name: Build APK arm64-v8a
+        working-directory: misty_breez
+        run: |
+          flutter build apk \
+            --build-name="$VERSION_BASE" \
+            --build-number="$BUILD_NUMBER" \
+            --target="lib/main/main.dart" \
+            --release \
+            --target-platform android-arm64 \
+            --no-pub \
+            --dart-define-from-file="config.json"
+
+      - name: Rename APK
+        working-directory: misty_breez
+        run: |
+          mv build/app/outputs/flutter-apk/app-arm64-v8a-release.apk \
+             build/app/outputs/flutter-apk/wallet-${{ env.VERSION_BASE }}-${{ env.BUILD_NUMBER }}-arm64-v8a.apk
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: wallet-arm64-v8a-${{ env.BUILD_NUMBER }}
+          path: misty_breez/build/app/outputs/flutter-apk/wallet-${{ env.VERSION_BASE }}-${{ env.BUILD_NUMBER }}-arm64-v8a.apk
