@@ -4,6 +4,7 @@ extension InputTypeExtension on InputType {
   String toFormattedString() {
     return switch (this) {
       InputType_BitcoinAddress() => (this as InputType_BitcoinAddress).address.toFormattedString(),
+      InputType_LiquidAddress() => (this as InputType_LiquidAddress).address.toFormattedString(),
       InputType_Bolt12Offer() =>
         (this as InputType_Bolt12Offer).offer.toFormattedString() +
             ((this as InputType_Bolt12Offer).bip353Address == null
@@ -69,4 +70,10 @@ extension LnUrlAuthRequestDataExtension on LnUrlAuthRequestData {
 
 extension LnUrlErrorDataExtension on LnUrlErrorData {
   String toFormattedString() => 'LnUrlErrorData(reason: $reason)';
+}
+
+extension LiquidAddressDataExtension on LiquidAddressData {
+  String toFormattedString() =>
+      'LiquidAddressData(address: $address, network: $network, assetId: $assetId, '
+      'amount: $amount, amountSat: $amountSat, label: $label, message: $message)';
 }

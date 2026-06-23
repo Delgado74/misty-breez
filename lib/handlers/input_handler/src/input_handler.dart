@@ -98,6 +98,8 @@ class InputHandler extends Handler {
       throw inputState.data.reason;
     } else if (inputState is BitcoinAddressInputState) {
       return handleBitcoinAddress(context, inputState);
+    } else if (inputState is LiquidAddressInputState) {
+      return handleLiquidAddress(context, inputState);
     } else if (unsupportedInputStates.contains(inputState.runtimeType)) {
       throw context.texts().payment_info_dialog_error_unsupported_input;
     } else if (inputState is EmptyInputState) {
@@ -185,6 +187,14 @@ class InputHandler extends Handler {
   Future<dynamic> handleBitcoinAddress(BuildContext context, BitcoinAddressInputState inputState) async {
     _logger.fine('Handle Bitcoin Address $inputState');
     return await Navigator.of(context).pushNamed(SendChainSwapPage.routeName, arguments: inputState.data);
+  }
+
+  Future<dynamic> handleLiquidAddress(BuildContext context, LiquidAddressInputState inputState) async {
+    _logger.fine('Handle Liquid Address $inputState');
+    return await Navigator.of(context).pushNamed(
+      SendLiquidAddressPage.routeName,
+      arguments: inputState.data,
+    );
   }
 
   void handleResult(dynamic result) {

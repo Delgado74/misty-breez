@@ -37,6 +37,9 @@ class InputState {
   const factory InputState.bitcoinAddress(BitcoinAddressData data, InputSource source) =
       BitcoinAddressInputState;
 
+  const factory InputState.liquidAddress(LiquidAddressData data, InputSource source) =
+      LiquidAddressInputState;
+
   const factory InputState.url(String url, InputSource source) = UrlInputState;
 }
 
@@ -252,6 +255,29 @@ class BitcoinAddressInputState extends InputState {
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is BitcoinAddressInputState &&
+          runtimeType == other.runtimeType &&
+          data == other.data &&
+          source == other.source;
+
+  @override
+  int get hashCode => Object.hash(data, source);
+}
+
+class LiquidAddressInputState extends InputState {
+  const LiquidAddressInputState(this.data, this.source) : super._();
+
+  final LiquidAddressData data;
+  final InputSource source;
+
+  @override
+  String toString() {
+    return 'LiquidAddressInputState{data: ${data.toFormattedString()}, source: $source}';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is LiquidAddressInputState &&
           runtimeType == other.runtimeType &&
           data == other.data &&
           source == other.source;
