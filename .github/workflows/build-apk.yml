@@ -98,6 +98,17 @@ jobs:
         run: |
           echo '${{ vars.CONFIG_FILE }}' > config.json
 
+      - name: Generate debug keystore for signing
+        run: |
+          keytool -genkey -v -keystore ${{ runner.temp }}/debug.keystore \
+            -alias androiddebugkey -keyalg RSA -keysize 2048 -validity 10000 \
+            -storepass android -keypass android \
+            -dname "CN=, OU=, O=, L=, S=, C="
+          echo "STORE_FILE=${{ runner.temp }}/debug.keystore" >> $GITHUB_ENV
+          echo "KEY_ALIAS=androiddebugkey" >> $GITHUB_ENV
+          echo "STORE_PASSWORD=android" >> $GITHUB_ENV
+          echo "KEY_PASSWORD=android" >> $GITHUB_ENV
+
       - name: Build APK arm64-v8a
         working-directory: misty_breez
         run: |
