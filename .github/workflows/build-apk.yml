@@ -67,6 +67,12 @@ jobs:
           retry = 3
           EOF
 
+      - name: Rust cache
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: breez-sdk-liquid/lib/
+          cache-all-crates: true
+
       - name: Install Breez Liquid SDK dependencies
         working-directory: breez-sdk-liquid/packages/flutter_breez_liquid/
         run: just setup
@@ -96,7 +102,7 @@ jobs:
       - name: Setup compile-time variables
         working-directory: misty_breez
         run: |
-          echo '${{ vars.CONFIG_FILE }}' > config.json
+          echo '${{ secrets.CONFIG_FILE }}' > config.json
 
       - name: Generate debug keystore for signing
         run: |
