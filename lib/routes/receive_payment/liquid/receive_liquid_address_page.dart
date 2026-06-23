@@ -15,7 +15,7 @@ const _usdtAssetId = 'ce091c998b83c78bb71a632313ba3760f1763d9cfcffae02258ffa9865
 
 class ReceiveLiquidAddressPage extends StatefulWidget {
   static const String routeName = '/receive_liquid_address';
-  static const int pageIndex = 4;
+  static const int pageIndex = 3;
 
   const ReceiveLiquidAddressPage({super.key});
 

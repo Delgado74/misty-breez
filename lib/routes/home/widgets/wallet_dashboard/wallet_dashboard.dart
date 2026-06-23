@@ -60,6 +60,14 @@ class _WalletDashboardState extends State<WalletDashboard> {
                         offsetFactor: widget.offsetFactor,
                       ),
                     ),
+                    Positioned(
+                      top: 140 - _kBalanceOffsetTransition * widget.offsetFactor,
+                      child: AssetBalanceText(
+                        hiddenBalance: hiddenBalance,
+                        accountState: accountState,
+                        offsetFactor: widget.offsetFactor,
+                      ),
+                    ),
                   ],
                 );
               },
