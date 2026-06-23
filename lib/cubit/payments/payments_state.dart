@@ -13,18 +13,8 @@ class PaymentsState {
   PaymentsState.initial() : this(payments: <PaymentData>[], paymentFilters: PaymentFilters.initial());
 
   PaymentsState copyWith({List<PaymentData>? payments, PaymentFilters? paymentFilters}) {
-    // This is a workaround to only include BTC assets in the unfiltered payments.
-    // If Misty is to support multi-assets then this prefilter should be removed.
-    final List<PaymentData>? prefilteredPayments = payments?.where((PaymentData paymentData) {
-      final String? paymentAssetTicker = paymentData.details.maybeMap(
-        liquid: (PaymentDetails_Liquid details) => details.assetInfo?.ticker ?? '',
-        orElse: () => null,
-      );
-      return paymentAssetTicker == null || paymentAssetTicker == 'BTC';
-    }).toList();
-
     return PaymentsState(
-      payments: prefilteredPayments ?? this.payments,
+      payments: payments ?? this.payments,
       paymentFilters: paymentFilters ?? this.paymentFilters,
     );
   }
