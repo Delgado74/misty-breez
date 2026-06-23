@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_breez_liquid/flutter_breez_liquid.dart';
 import 'package:logging/logging.dart';
 import 'package:misty_breez/cubit/cubit.dart';
+import 'package:misty_breez/routes/routes.dart';
 import 'package:misty_breez/theme/theme.dart';
 import 'package:misty_breez/utils/utils.dart';
 import 'package:misty_breez/widgets/back_button.dart' as back_button;
@@ -185,11 +186,6 @@ class _SendLiquidAddressPageState extends State<SendLiquidAddressPage> {
       navigator.push(loaderRoute);
       try {
         final LiquidAddressData addressData = widget.liquidAddressData!;
-        final SendDestination destination = SendDestination_LiquidAddress(
-          addressData: addressData,
-          bip353Address: null,
-        );
-
         final double amount = double.tryParse(_amountController.text) ?? 0;
         final PayAmount payAmount = PayAmount_Asset(
           toAsset: _selectedAssetId,
@@ -199,7 +195,7 @@ class _SendLiquidAddressPageState extends State<SendLiquidAddressPage> {
         );
 
         final PrepareSendRequest req = PrepareSendRequest(
-          destination: destination,
+          destination: addressData.address,
           amount: payAmount,
         );
 
