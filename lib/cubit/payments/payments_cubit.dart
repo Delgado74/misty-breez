@@ -113,12 +113,19 @@ class PaymentsCubit extends Cubit<PaymentsState> with HydratedMixin<PaymentsStat
   Future<PrepareReceiveResponse> prepareReceivePayment({
     required PaymentMethod paymentMethod,
     BigInt? payerAmountSat,
+    String? assetId,
+    double? payerAmount,
   }) async {
-    _logger.info('prepareReceivePayment\nPreparing receive payment for $payerAmountSat sats');
+    _logger.info('prepareReceivePayment\nPreparing receive payment for $payerAmountSat sats / asset: $assetId');
     try {
-      final ReceiveAmount_Bitcoin? receiveAmount = payerAmountSat != null
-          ? ReceiveAmount_Bitcoin(payerAmountSat: payerAmountSat)
-          : null;
+      final ReceiveAmount? receiveAmount;
+      if (assetId != null) {
+        receiveAmount = ReceiveAmount_Asset(assetId: assetId, payerAmount: payerAmount);
+      } else if (payerAmountSat != null) {
+        receiveAmount = ReceiveAmount_Bitcoin(payerAmountSat: payerAmountSat);
+      } else {
+        receiveAmount = null;
+      }
       final PrepareReceiveRequest req = PrepareReceiveRequest(
         paymentMethod: paymentMethod,
         amount: receiveAmount,

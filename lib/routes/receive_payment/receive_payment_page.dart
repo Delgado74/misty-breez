@@ -21,6 +21,7 @@ class _ReceivePaymentPageState extends State<ReceivePaymentPage> {
     ReceiveLightningPaymentPage(),
     ReceiveAmountlessBitcoinAddressPage(),
     ReceiveBitcoinAddressPaymentPage(),
+    ReceiveLiquidAddressPage(),
   ];
 
   bool _hasAmountlessBtcAddressError = false;
@@ -87,14 +88,21 @@ class _ReceivePaymentPageState extends State<ReceivePaymentPage> {
           ? ReceiveBitcoinAddressPaymentPage.pageIndex
           : ReceiveAmountlessBitcoinAddressPage.pageIndex;
     }
+    if (_currentPaymentMethod == PaymentMethod.liquidAddress) {
+      return ReceiveLiquidAddressPage.pageIndex;
+    }
     return 0;
   }
 
   PaymentMethod get _currentPaymentMethod {
-    return _currentPageIndex == ReceiveAmountlessBitcoinAddressPage.pageIndex ||
-            _currentPageIndex == ReceiveBitcoinAddressPaymentPage.pageIndex
-        ? PaymentMethod.bitcoinAddress
-        : PaymentMethod.bolt11Invoice;
+    if (_currentPageIndex == ReceiveLiquidAddressPage.pageIndex) {
+      return PaymentMethod.liquidAddress;
+    }
+    if (_currentPageIndex == ReceiveAmountlessBitcoinAddressPage.pageIndex ||
+        _currentPageIndex == ReceiveBitcoinAddressPaymentPage.pageIndex) {
+      return PaymentMethod.bitcoinAddress;
+    }
+    return PaymentMethod.bolt11Invoice;
   }
 
   Future<void> _onPaymentMethodChanged(PaymentMethod newMethod) async {
@@ -106,7 +114,9 @@ class _ReceivePaymentPageState extends State<ReceivePaymentPage> {
         _showBtcPaymentRequestPage = false;
         _currentPageIndex = newMethod == PaymentMethod.bitcoinAddress
             ? ReceiveAmountlessBitcoinAddressPage.pageIndex
-            : 0;
+            : newMethod == PaymentMethod.liquidAddress
+                ? ReceiveLiquidAddressPage.pageIndex
+                : 0;
       });
     });
   }

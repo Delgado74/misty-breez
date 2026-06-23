@@ -127,23 +127,8 @@ jobs:
             --no-pub \
             --dart-define-from-file="config.json"
 
-      - name: Rename APK
-        working-directory: misty_breez
-        run: |
-          # Without --split-per-abi, Flutter produces a single APK named app-release.apk
-          # Find the actual APK to handle possible naming variations
-          APK_FILE=$(ls build/app/outputs/flutter-apk/app-*-release.apk 2>/dev/null | head -1)
-          if [ -z "$APK_FILE" ]; then
-            echo "::error::APK not found in build/app/outputs/flutter-apk/"
-            ls -la build/app/outputs/flutter-apk/
-            exit 1
-          fi
-          echo "Found APK: $APK_FILE"
-          mv "$APK_FILE" \
-             build/app/outputs/flutter-apk/wallet-${{ env.VERSION_BASE }}-${{ env.BUILD_NUMBER }}-arm64-v8a.apk
-
-      - name: Upload APK artifact
+      - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: wallet-arm64-v8a-${{ env.BUILD_NUMBER }}
-          path: misty_breez/build/app/outputs/flutter-apk/wallet-${{ env.VERSION_BASE }}-${{ env.BUILD_NUMBER }}-arm64-v8a.apk
+          name: wallet-${{ env.VERSION_BASE }}-${{ env.BUILD_NUMBER }}-arm64-v8a
+          path: misty_breez/build/app/outputs/flutter-apk/app-release.apk
