@@ -98,6 +98,17 @@ Route<dynamic>? onGenerateRoute({
                       ),
                       settings: settings,
                     );
+                  case SendLiquidAddressPage.routeName:
+                    return FadeInRoute<void>(
+                      builder: (BuildContext context) => BlocProvider<PaymentLimitsCubit>(
+                        create: (BuildContext context) =>
+                            PaymentLimitsCubit(ServiceInjector().breezSdkLiquid),
+                        child: SendLiquidAddressPage(
+                          liquidAddressData: settings.arguments as LiquidAddressData?,
+                        ),
+                      ),
+                      settings: settings,
+                    );
                   case LnPaymentPage.routeName:
                     return FadeInRoute<SendPaymentRequest?>(
                       builder: (BuildContext context) => BlocProvider<PaymentLimitsCubit>(
