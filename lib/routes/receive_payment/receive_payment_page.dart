@@ -153,7 +153,7 @@ class _ReceivePaymentPageState extends State<ReceivePaymentPage> {
   }
 
   Future<void> _onPaymentMethodChanged(PaymentMethod newMethod) async {
-    if (newMethod == PaymentMethod.liquidAddress || newMethod == _currentPaymentMethod) {
+    if (newMethod == _currentPaymentMethod) {
       return;
     }
     Future<void>.microtask(() async {
