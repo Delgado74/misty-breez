@@ -1,4 +1,4 @@
-import 'package:firebase_notifications_client/firebase_notifications_client.dart';
+import 'package:service_injector/service_injector.dart';
 import 'package:flutter/foundation.dart';
 import 'package:logging/logging.dart';
 import 'package:misty_breez/cubit/cubit.dart';

@@ -25,7 +25,6 @@ class _ReceivePaymentPageState extends State<ReceivePaymentPage> {
     ReceiveLiquidAddressPage(),
   ];
 
-  bool _hasNotificationPermission = false;
   bool _hasLnAddressStateError = false;
   bool _hasAmountlessBtcAddressError = false;
 
@@ -43,10 +42,6 @@ class _ReceivePaymentPageState extends State<ReceivePaymentPage> {
 
   @override
   Widget build(BuildContext context) {
-    final PermissionStatus notificationStatus = context.select<PermissionsCubit, PermissionStatus>(
-      (PermissionsCubit cubit) => cubit.state.notificationStatus,
-    );
-    _hasNotificationPermission = notificationStatus == PermissionStatus.granted;
     _hasLnAddressStateError = context.select<LnAddressCubit, bool>(
       (LnAddressCubit cubit) => cubit.state.hasError,
     );
@@ -61,7 +56,7 @@ class _ReceivePaymentPageState extends State<ReceivePaymentPage> {
       appBar: AppBar(
         leading: back_button.BackButton(
           onPressed: () {
-            final bool canReturnToLNAddressPage = (_hasNotificationPermission && !_hasLnAddressStateError);
+            final bool canReturnToLNAddressPage = !_hasLnAddressStateError;
             if (_showInvoicePage && canReturnToLNAddressPage) {
               setState(() {
                 _showInvoicePage = false;
@@ -124,10 +119,9 @@ class _ReceivePaymentPageState extends State<ReceivePaymentPage> {
 
   int _getEffectivePageIndex() {
     // Redirect to Invoice page if LN Address page is opened
-    // - without notification permissions
     // - when LN Address state had errors
     if (_currentPaymentMethod == PaymentMethod.bolt11Invoice) {
-      final bool shouldRedirect = _showInvoicePage || !_hasNotificationPermission || _hasLnAddressStateError;
+      final bool shouldRedirect = _showInvoicePage || _hasLnAddressStateError;
       return shouldRedirect ? ReceiveLightningPaymentPage.pageIndex : ReceiveLightningAddressPage.pageIndex;
     }
 

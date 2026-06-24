@@ -5,16 +5,28 @@ import 'package:breez_preferences/breez_preferences.dart';
 import 'package:breez_sdk_liquid/breez_sdk_liquid.dart';
 import 'package:credentials_manager/credentials_manager.dart';
 import 'package:device_client/device_client.dart';
-import 'package:firebase_notifications_client/firebase_notifications_client.dart';
 import 'package:keychain/keychain.dart';
 import 'package:lightning_links/lightning_links.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+abstract class NotificationsClient {
+  Future<String?> getToken();
+  Stream<Map<dynamic, dynamic>> get notifications;
+}
+
+class NoOpNotificationsClient implements NotificationsClient {
+  @override
+  Future<String?> getToken() async => null;
+
+  @override
+  Stream<Map<dynamic, dynamic>> get notifications => const Stream.empty();
+}
 
 class ServiceInjector {
   static final ServiceInjector _singleton = ServiceInjector._internal();
   static ServiceInjector? _injector;
 
-  FirebaseNotificationsClient? _notifications;
+  NoOpNotificationsClient? _notifications;
 
   BreezSDKLiquid? _breezSdkLiquid;
   LightningLinksService? _lightningLinksService;
@@ -32,7 +44,7 @@ class ServiceInjector {
 
   static void configure(ServiceInjector injector) => _injector = injector;
 
-  NotificationsClient get notifications => _notifications ??= FirebaseNotificationsClient();
+  NotificationsClient get notifications => _notifications ??= NoOpNotificationsClient();
 
   DeviceClient get deviceClient => _deviceClient ??= DeviceClient();
 

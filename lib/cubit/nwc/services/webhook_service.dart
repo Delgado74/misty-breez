@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:breez_sdk_liquid/breez_sdk_liquid.dart';
-import 'package:firebase_notifications_client/firebase_notifications_client.dart';
+import 'package:service_injector/service_injector.dart';
 import 'package:flutter_breez_liquid/flutter_breez_liquid.dart';
 import 'package:http/http.dart' as http;
 import 'package:logging/logging.dart';

@@ -14,7 +14,6 @@ workspace:
   - packages/device_client
   - packages/keychain
   - packages/lightning_links
-  - packages/notifications_client/firebase_notifications_client
   # Utility Packages
   - packages/breez_logger
   - packages/breez_sdk_liquid
@@ -36,9 +35,6 @@ dependencies:
   keychain:
     path: packages/keychain
   lightning_links:
-    path: packages/lightning_links
-  firebase_notifications_client:
-    path: packages/notifications_client/firebase_notifications_client
   # Utility Packages
   breez_logger:
     path: packages/breez_logger
@@ -75,8 +71,7 @@ dependencies:
   email_validator: ^3.0.0
   extended_image: ^10.0.1
   ffi: ^2.2.0
-  firebase_core: ^4.5.0
-  firebase_messaging: ^16.1.2
+
   flutter_bloc: ^9.1.1
   flutter_cache_manager: ^3.4.1
   flutter_fgbg: ^0.7.1

@@ -128,20 +128,25 @@ class LnUrlRegistrationManager {
     await _initPreferencesCache();
     _logger.info('Setting up webhook for pubKey: $pubKey');
 
-    // First, generate the new webhook URL
-    final String webhookUrl = await webhookService.generateWebhookUrl();
+    try {
+      // First, generate the new webhook URL
+      final String webhookUrl = await webhookService.generateWebhookUrl();
 
-    // Then unregister any existing webhook
-    await _unregisterExistingWebhookIfNeeded(pubKey: pubKey, newWebhookUrl: webhookUrl);
+      // Then unregister any existing webhook
+      await _unregisterExistingWebhookIfNeeded(pubKey: pubKey, newWebhookUrl: webhookUrl);
 
-    // Finally register the new webhook and update preferences in parallel
-    await Future.wait(<Future<void>>[
-      webhookService.register(webhookUrl),
-      _updatePreferences(webhookUrl: webhookUrl),
-    ]);
+      // Finally register the new webhook and update preferences in parallel
+      await Future.wait(<Future<void>>[
+        webhookService.register(webhookUrl),
+        _updatePreferences(webhookUrl: webhookUrl),
+      ]);
 
-    _logger.info('Successfully setup webhook');
-    return webhookUrl;
+      _logger.info('Successfully setup webhook');
+      return webhookUrl;
+    } catch (e) {
+      _logger.warning('Failed to setup webhook, continuing without push notifications', e);
+      return '';
+    }
   }
 
   /// Handles the recovery registration flow.
